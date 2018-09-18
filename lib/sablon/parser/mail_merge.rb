@@ -3,7 +3,7 @@ module Sablon
     class MailMerge
       class MergeField
         attr_accessor :block_reference_count
-        KEY_PATTERN = /^\s*MERGEFIELD\s+([^ ]+)\s+\\\*\s+MERGEFORMAT\s*$/
+        KEY_PATTERN = /^\s*MERGEFIELD\s+([^ (]+(\([^(]+\)){0,1})\s*(\\\*\s+MERGEFORMAT\s*){0,1}$/
 
         def initialize
           @block_reference_count = 0

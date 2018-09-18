@@ -12,8 +12,14 @@ module Sablon
     end
 
     class Loop < Struct.new(:list_expr, :iterator_name, :block)
+<<<<<<< HEAD
       def evaluate(env)
         value = list_expr.evaluate(env.context)
+=======
+      def evaluate(context)
+        value = list_expr.evaluate(context)
+        value = [] if value.nil?
+>>>>>>> 1cb5f7de469b0cf04668e4df43e11f7fefb9ae90
         value = value.to_ary if value.respond_to?(:to_ary)
         raise ContextError, "The expression #{list_expr.inspect} should evaluate to an enumerable but was: #{value.inspect}" unless value.is_a?(Enumerable)
 
@@ -53,6 +59,7 @@ module Sablon
       end
     end
 
+<<<<<<< HEAD
     class Condition
       def initialize(conditions)
         @conditions = conditions
@@ -102,6 +109,28 @@ module Sablon
           else
             block.replace([])
           end
+=======
+    class Condition < Struct.new(:conditon_expr, :block, :predicate)
+      def evaluate(context)
+        value = conditon_expr.evaluate(context)
+        to_test = false
+        if predicate
+          arg_matches = /(?<m>==|!=|>=|<=|>|<)\s*(?<args>[^()]+)/.match(predicate)
+          if arg_matches.nil?
+            to_test = value.public_send(predicate) if value.respond_to?(predicate)
+          else
+            m = arg_matches[:m].strip
+            args = arg_matches[:args].split(",").map { |arg| arg.strip }
+            to_test = value.public_send(m, *args) if value.respond_to?(m)
+          end
+        else
+          to_test = value
+        end
+        if truthy?(to_test)
+          block.replace(block.process(context).reverse)
+        else
+          block.replace([])
+>>>>>>> 1cb5f7de469b0cf04668e4df43e11f7fefb9ae90
         end
       end
 
@@ -110,6 +139,7 @@ module Sablon
         when Array
           !value.empty?
         else
+<<<<<<< HEAD
           value ? true : false
         end
       end
@@ -146,6 +176,9 @@ module Sablon
           rel = env.document.find_relationship_by('Id', value, entry)
           rid = env.document.add_relationship(rel.attributes)
           image.rid_by_file[env.document.current_entry] = rid
+=======
+          !!value && value.to_s != ''
+>>>>>>> 1cb5f7de469b0cf04668e4df43e11f7fefb9ae90
         end
         #
         image.local_rid = image.rid_by_file[env.document.current_entry]
